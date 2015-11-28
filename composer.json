@@ -1,0 +1,15 @@
+{
+    "name": "ijortengab/info-configuration",
+    "description": "Dumper and parser for dot info file.",
+    "type": "library",
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "IjorTengab",
+            "email": "m_roji28@yahoo.com",
+        }
+    ],
+    "autoload": {
+        "psr-4": {"IjorTengab\\": ""}
+    }
+}
