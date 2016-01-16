@@ -3,16 +3,16 @@ Info Configuration
 
 Dumper and parser for dot info file.
 
-   > "The file format is "INI-like" for ease of authoring, but also includes 
-   > some "Drupalisms" such as the array[] syntax so standard PHP functions 
+   > "The file format is "INI-like" for ease of authoring, but also includes
+   > some "Drupalisms" such as the array[] syntax so standard PHP functions
    > for reading/writing INI files can't be used." [Source][blog]
-   
-File dot ini (.ini) adalah file untuk menyimpan konfigurasi buatan Microsoft 
-dan digunakan oleh PHP untuk menyimpan konfigurasi global (php.ini). 
-Kelemahan file dot ini adalah tidak bisa menyimpan konfigurasi secara array 
-multidimensi (terbatas hanya 2 level kedalaman array). 
 
-Parse Info adalah library PHP untuk serialize dan unserialize variable bertype 
+File dot ini (.ini) adalah file untuk menyimpan konfigurasi buatan Microsoft
+dan digunakan oleh PHP untuk menyimpan konfigurasi global (php.ini).
+Kelemahan file dot ini adalah tidak bisa menyimpan konfigurasi secara array
+multidimensi (terbatas hanya 2 level kedalaman array).
+
+Parse Info adalah library PHP untuk serialize dan unserialize variable bertype
 array menjadi content file dot info.
 
 Contoh file dot ini:
@@ -48,7 +48,7 @@ parent2[key3][child] = value
 ## Usage
 
 ```php
-// Mengubah array menjadi isi file dot info, 
+// Mengubah array menjadi isi file dot info,
 // seperti serialize() dan json_encode().
 $content = ParseInfo::encode($array);
 // Mengubah isi file dot info menjadi array,
