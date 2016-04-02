@@ -1,6 +1,8 @@
 Info Configuration
 ==================
 
+This project is part of Configuration Editor but can be used as a standalone project.
+
 Dumper and parser for dot info file.
 
    > "The file format is "INI-like" for ease of authoring, but also includes
