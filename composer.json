@@ -16,11 +16,5 @@
     },
     "autoload": {
         "psr-4": {"IjorTengab\\": "src/"}
-    },        
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/ijortengab/parse-ini"
-        }
-    ]
+    }
 }

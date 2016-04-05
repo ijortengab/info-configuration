@@ -11,6 +11,11 @@ menggunakan Class Configuration Editor.
 [2]: https://en.wikipedia.org/wiki/Configuration_file
 [3]: https://github.com/ijortengab/configuration-editor
 
+## Requirements
+
+ - PHP > 5.4
+ - ```composer require psr/log```
+
 ## Comparison
 
 PHP telah memiliki fungsi untuk memparsing file dot ini. Library ParseINI hadir
@@ -35,10 +40,9 @@ ini. Perhatikan _trailing comma_ agar format json anda tidak rusak.
 ```json
 {
     "require": {
-        "php": ">=5.4.0",
-        "ijortengab/parse-ini": "*",
-        "psr/log": "^1.0"
+        "ijortengab/parse-ini": "master"
     },
+    "minimum-stability": "dev",
     "repositories": [
         {
             "type": "vcs",
