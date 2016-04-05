@@ -1,6 +1,6 @@
 {
     "name": "ijortengab/parse-ini",
-    "description": "Dumper and parser for dot ini file.",
+    "description": "Parser for INI file format.",
     "type": "library",
     "license": "GPL",
     "authors": [

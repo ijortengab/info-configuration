@@ -35,8 +35,9 @@ ini. Perhatikan _trailing comma_ agar format json anda tidak rusak.
 ```json
 {
     "require": {
+        "php": ">=5.4.0",
         "ijortengab/parse-ini": "*",
-        "psr/log": "*"
+        "psr/log": "^1.0"
     },
     "repositories": [
         {
@@ -49,17 +50,17 @@ ini. Perhatikan _trailing comma_ agar format json anda tidak rusak.
 
 ## Usage
 
- 1. Melalui file.
-    ```php
-    $obj = new ParseINI;
-    $obj->filename = 'test.ini';
-    $obj->parse();
-    $result = $obj->data;
-    ```
- 2. Melalui string.
-    ```php
-    $obj = new ParseINI;
-    $obj->raw = file_get_contents('test.ini');
-    $obj->parse();
-    $result = $obj->data;
-    ```
+```php
+// Melalui file
+$obj = new ParseINI;
+$obj->filename = 'test.ini';
+$obj->parse();
+$result = $obj->data;
+
+// Melalui string
+$string = file_get_contents('test.ini');
+$obj = new ParseINI;
+$obj->raw = $string;
+$obj->parse();
+$result = $obj->data;
+```
