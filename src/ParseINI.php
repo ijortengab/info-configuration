@@ -5,33 +5,8 @@ namespace IjorTengab;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-/*
-
-
-
-
-Contoh kasus bermasalah:
-
-name = foo\"bar
-age = 28
-
-name = foo\'bar
-age = 28
-
-name = asd"abar"
-age = '28'  aafda    ' cinta kita'
-mengapa = kita
-
-[[[[[[[
-]]]]]]
-untuk contoh diatas kita perlu deal dengan
-line yang tidak valid.
-
-
- */
-
 /**
- * Dumper and parser for dot ini file.
+ * Parser for INI file format.
  */
 class ParseINI
 {
@@ -123,6 +98,9 @@ class ParseINI
             if (is_readable($file)) {
                 $this->raw = file_get_contents($this->filename);
                 $this->parseString($this->raw);
+            }
+            else {
+                return false;
             }
         }
         return true;
@@ -287,7 +265,7 @@ class ParseINI
                     }
                     elseif ($ch == ';') {
                         if (empty($line_storage['quote'])) {
-                            $test = rtrim($line_storage['value']);                            
+                            $test = rtrim($line_storage['value']);
                             if ($line_storage['value'] !== $test) {
                                 $line_storage['value append'] = substr($line_storage['value'], strlen($test));
                                 $line_storage['value'] = $test;
@@ -390,7 +368,6 @@ class ParseINI
                         // Todo Log.
                         // $log = 'Warning: syntax error, unexpected $end in test.ini on line 1 in __FILE__ on line __LINE__';
                         // $debugname = 'log'; echo "\r\n<pre>" . __FILE__ . ":" . __LINE__ . "\r\n". 'var_dump(' . $debugname . '): '; var_dump($$debugname); echo "</pre>\r\n";
-
                     }
                     else {
                         // Todo Log.

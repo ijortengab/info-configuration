@@ -1,66 +1,65 @@
-Info Configuration
+Parse INI
 ==================
 
-This project is part of Configuration Editor but can be used as a standalone project.
+ParseINI adalah library PHP untuk mempersing [INI File Format][1]. File dot INI
+adalah [salah satu file][2] yang digunakan untuk menyimpan configuration. 
+Library ini di-design untuk terintegrasi dengan Class [Configuration Editor][3]. 
+Untuk kebutuhan unparse/dump array kedalam format dot ini, Anda dapat 
+menggunakan Class Configuration Editor.
 
-Dumper and parser for dot info file.
+[1]: https://en.wikipedia.org/wiki/INI_file
+[2]: https://en.wikipedia.org/wiki/Configuration_file
+[3]: https://github.com/ijortengab/configuration-editor
 
-   > "The file format is "INI-like" for ease of authoring, but also includes
-   > some "Drupalisms" such as the array[] syntax so standard PHP functions
-   > for reading/writing INI files can't be used." [Source][blog]
+## Comparison
 
-File dot ini (.ini) adalah file untuk menyimpan konfigurasi buatan Microsoft
-dan digunakan oleh PHP untuk menyimpan konfigurasi global (php.ini).
-Kelemahan file dot ini adalah tidak bisa menyimpan konfigurasi secara array
-multidimensi (terbatas hanya 2 level kedalaman array).
+PHP telah memiliki fungsi untuk memparsing file dot ini. Library ParseINI hadir
+untuk melengkapi berbagai kasus yang tidak dapat dihandle oleh fungsi bawaan
+PHP (```parse_ini_file``` dan ```parse_ini_string```). Contohnya pada format
+sbb:
 
-Parse Info adalah library PHP untuk serialize dan unserialize variable bertype
-array menjadi content file dot info.
-
-Contoh file dot ini:
 ```ini
-; global
-key1 = value
-key2 = value
-[parent1]
-; inside array parent1
-key1 = value
-key2 = value
-[parent2]
-; inside array parent2
-key1 = value
-key2 = value
+key[child][] = value
+key[child][] = other
 ```
 
-Contoh file dot info:
-```ini
-; global
-key1 = value
-key2 = value
-; inside array parent1
-parent1[key1] = value
-parent1[key2] = value
-parent1[key3][child] = value
-; inside array parent1
-parent2[key1] = value
-parent2[key2] = value
-parent2[key3][child] = value
+Format diatas terinspirasi pada file [dot info][4] dari Drupal 7.
+
+[4]: https://www.drupal.org/node/542202
+
+## Repository
+
+Tambahkan code berikut pada composer.json jika project anda membutuhkan library
+ini. Perhatikan _trailing comma_ agar format json anda tidak rusak.
+
+```json
+{
+    "require": {
+        "ijortengab/parse-ini": "*",
+        "psr/log": "*"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/ijortengab/parse-ini"
+        }
+    ]
+}
 ```
 
 ## Usage
 
-```php
-// Mengubah array menjadi isi file dot info,
-// seperti serialize() dan json_encode().
-$content = ParseInfo::encode($array);
-// Mengubah isi file dot info menjadi array,
-// seperti unserialize() dan json_decode().
-$array = ParseInfo::decode($content);
-```
-
-## Reference
-
- *   [Writing module .info files](https://www.drupal.org/node/542202)
- *   [Acquia Blog][blog]
-
-[blog]: https://www.acquia.com/blog/ultimate-guide-drupal-8-episode-7-code-changes-drupal-8
+ 1. Melalui file.
+    ```php
+    $obj = new ParseINI;
+    $obj->filename = 'test.ini';
+    $obj->parse();
+    $result = $obj->data;
+    ```
+ 2. Melalui string.
+    ```php
+    $obj = new ParseINI;
+    $obj->raw = file_get_contents('test.ini');
+    $obj->parse();
+    $result = $obj->data;
+    ```
