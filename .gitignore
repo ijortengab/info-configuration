@@ -3,3 +3,4 @@ test.ini
 composer.phar
 composer.lock
 /vendor/
+TODO.md

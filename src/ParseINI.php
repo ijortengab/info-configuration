@@ -10,44 +10,93 @@ use Psr\Log\NullLogger;
  */
 class ParseINI
 {
+    /**
+     * Informasi path filename.
+     */
     public $filename;
 
+    /**
+     * Isi content dengan format INI yang akan diparsing.
+     */
     public $raw;
 
+    /**
+     * Penanda apakah telah dilakukan parsing. Saat instance baru dibuat, maka
+     * parsing belum dilakukan. Nilai otomatis menjadi true jika method 
+     * ::parse() dijalankan.
+     */
+    protected $has_parsing = false;
+
+    /**
+     * Log berupa object yang mengimplements Psr\Log\LoggerInterface.
+     */
     public $log;
 
+    /**
+     * Hasil parsing file/string berformat INI.
+     */
     public $data = [];
 
+    /**
+     * Penampungan sementara key yang bersifat scalar, untuk nantinya dihitung
+     * index autoincrement saat dilakukan parsing.
+     * Contoh:
+     * [
+     *   "key[child][]",
+     *   "key[child][]",
+     *   "key[child][]",
+     * ]
+     * Pada array diatas, maka key[child][2] adalah index tertinggi.
+     */
     protected $key_scalar = [];
 
+    /**
+     * Mapping antara key data dengan line pada file.
+     * Array sederhana satu dimensi, dimana key merupakan array simplify
+     * dan value merupakan baris pada file.
+     * Contoh:
+     * [
+     *   "key[child][0]" => 1,
+     *   "key[child][1]" => 2,
+     *   "key[child][2]" => 3,
+     *   "other-key" => 4,
+     * ]
+     */
     public $data_map = [];
 
+    /**
+     * Referensi untuk EOL yang mayoritas pada file. Value pada property ini
+     * akan berubah setelah dilakukan parsing.
+     */
     protected $most_eol = "\n";
 
+    /**
+     * Todo.
+     */
     public $process_sections = false;
 
     /**
-     * INI_SCANNER_NORMAL
-     * INI_SCANNER_RAW
-     * INI_SCANNER_TYPED
+     * Todo.
+     * Kemungkinan value:
+     *  - INI_SCANNER_NORMAL
+     *  - INI_SCANNER_RAW
+     *  - INI_SCANNER_TYPED
      */
     public $scanner_mode = 'INI_SCANNER_NORMAL';
 
-    protected $line_storage_default = [
-        'key prepend' => '',
-        'key' => '',
-        'key append' => '',
-        'equals' => '',
-        'quote' => '',
-        'value prepend' => '',
-        'value' => '',
-        'value append' => '',
-        'comment' => '',
-        'eol' => '',
-    ];
-
+    /**
+     * Index array tempat menampung informasi format INI per line. Tiap line
+     * merupakan associative array dari referensi ::lineStorageDefault().
+     */
     protected $line_storage = [];
 
+    /**
+     * Construct.
+     *
+     * @param $info array
+     *   Array yang minimal harus ada key filename atau raw, tapi tidak
+     *   keduanya.
+     */
     function __construct(Array $info = [], LoggerInterface $log = null)
     {
         if (null === $log) {
@@ -59,7 +108,6 @@ class ParseINI
 
         if (array_key_exists('filename', $info)) {
             $this->filename = $info['filename'];
-            $this->raw = file_get_contents($this->filename);
         }
         if (array_key_exists('raw', $info)) {
             $this->raw = $info['raw'];
@@ -67,7 +115,27 @@ class ParseINI
     }
 
     /**
-     *
+     * Referensi yang akan digunakan saat parsing, berisi informasi default
+     * dari property $line_storage.
+     */
+    public function lineStorageDefault()
+    {
+        return [
+            'key prepend' => '',
+            'key' => '',
+            'key append' => '',
+            'equals' => '',
+            'quote' => '',
+            'value prepend' => '',
+            'value' => '',
+            'value append' => '',
+            'comment' => '',
+            'eol' => '',
+        ];
+    }
+
+    /**
+     * Mengeset object baru $log, jika dilewati saat construct.
      */
     public function setLog(LoggerInterface $log)
     {
@@ -77,7 +145,7 @@ class ParseINI
     }
 
     /**
-     *
+     * Mendapatkan object Psr/Log/LoggerInterface $log.
      */
     public function getLog()
     {
@@ -85,36 +153,43 @@ class ParseINI
     }
 
     /**
-     *
+     * Melakukan parsing.
      */
     public function parse()
     {
-        $input = $this->raw;
-        if (is_string($input)) {
-            $this->parseString($input);
-        }
-        else {
-            $file = $this->filename;
-            if (is_readable($file)) {
-                $this->raw = file_get_contents($this->filename);
+        $this->has_parsing = true;
+        try {
+            if (null === $this->raw && null !== $this->filename) {
+                if (is_readable($this->filename)) {
+                    $this->raw = file_get_contents($this->filename);
+                }
+                else {
+                    $this->log->error('File tidak dapat dibaca: {filename}.', ['filename' => $this->filename]);
+                    throw new \Exception;
+                }
+            }
+            if (is_string($this->raw)) {
                 $this->parseString($this->raw);
             }
             else {
-                return false;
+                $this->log->error('Content format INI not found');
+                throw new \Exception;
             }
+            return true;
         }
-        return true;
+        catch (\Exception $e) {
+        }
     }
 
     /**
-     *
+     * Melakukan parsing pada string berformat INI.
      */
     protected function parseString($string)
     {
         $strlen = strlen($string);
 
         $step = 'init';
-        $line_storage = $this->line_storage_default;
+        $line_storage = $this->lineStorageDefault();
         $register_character = false;
         $register_line = false;
         $register_data = false;
@@ -385,7 +460,7 @@ class ParseINI
             if ($register_line) {
                 $this->line_storage[$line_number] = $line_storage;
 
-                $line_storage = $this->line_storage_default;
+                $line_storage = $this->lineStorageDefault();
                 $register_line = false;
                 $step = 'init';
                 // Variable $_line_number mengalami penambahan
