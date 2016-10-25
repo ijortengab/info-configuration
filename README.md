@@ -12,6 +12,7 @@ parsing, maka library ini sudah cukup memenuhi kebutuhan tersebut.
 
 ## Requirements
  - PHP > 5.4
+ - ijortengab/tools
 
 ## Comparison
 

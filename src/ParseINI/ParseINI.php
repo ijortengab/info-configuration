@@ -54,7 +54,7 @@ class ParseINI extends AbstractAnalyzeCharacter
      *   "other-key" => 4,
      * ]
      */
-    public $keys = [];
+    protected $keys = [];
 
     /**
      * Penampungan sementara key yang bersifat scalar, untuk nantinya dihitung
