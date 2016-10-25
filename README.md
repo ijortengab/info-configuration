@@ -1,28 +1,28 @@
 Parse INI
 ==================
 
-ParseINI adalah library PHP untuk mempersing [INI File Format][1]. File dot INI
-adalah [salah satu file][2] yang digunakan untuk menyimpan configuration. 
-Library ini di-design untuk terintegrasi dengan Class [Configuration Editor][3]. 
-Untuk kebutuhan unparse/dump array kedalam format dot ini, Anda dapat 
-menggunakan Class Configuration Editor.
+ParseINI adalah library PHP untuk mempersing string berformat [INI][2] menjadi
+variable. Library ini di-design untuk terintegrasi dengan Library
+[Configuration Editor][1]. Untuk kebutuhan parse dan unparse sekaligus, maka
+sebaiknya gunakan Library [Configuration Editor][1]. Namun jika hanya untuk
+parsing, maka library ini sudah cukup memenuhi kebutuhan tersebut.
 
-[1]: https://en.wikipedia.org/wiki/INI_file
-[2]: https://en.wikipedia.org/wiki/Configuration_file
-[3]: https://github.com/ijortengab/configuration-editor
+[1]: https://github.com/ijortengab/configuration-editor
+[2]: https://en.wikipedia.org/wiki/INI_file
 
 ## Requirements
-
  - PHP > 5.4
- - ```composer require psr/log```
 
 ## Comparison
 
-PHP telah memiliki fungsi untuk memparsing file dot ini. Library ParseINI hadir
-untuk melengkapi berbagai kasus yang tidak dapat dihandle oleh fungsi bawaan
-PHP (```parse_ini_file``` dan ```parse_ini_string```). Contohnya pada format
-sbb:
+PHP telah memiliki fungsi untuk memparsing file dot ini (```parse_ini_file```)
+atau string berformat ini  (```parse_ini_string```). Tujuan utama dibuat library
+ini adalah untuk mempertahankan *comment* yang terdapat pada informasi di format
+INI agar tetap exists saat dilakukan dump/unparse. Untuk mendapatkan fitur ini,
+gunakan library [Configuration Editor][1].
 
+Library ParseINI dapat mempersing format yang tidak bisa di-handle oleh fungsi
+parsing bawaan PHP, contohnya pada format sbb:
 ```ini
 key[child][] = value
 key[child][] = other
@@ -54,17 +54,21 @@ ini. Perhatikan _trailing comma_ agar format json anda tidak rusak.
 
 ## Usage
 
-```php
-// Melalui file
-$obj = new ParseINI;
-$obj->filename = 'test.ini';
-$obj->parse();
-$result = $obj->data;
+Disarankan untuk menghandle RuntimeException saat menjalankan method ::parse()
+apabila format diragukan kevalidasiannya.
 
-// Melalui string
-$string = file_get_contents('test.ini');
-$obj = new ParseINI;
-$obj->raw = $string;
-$obj->parse();
-$result = $obj->data;
+```php
+use IjorTengab\ParseINI\ParseINI;
+use IjorTengab\ParseINI\RuntimeException;
+require 'vendor/autoload.php'; // Sesuaikan dgn path anda.
+$ini = file_get_contents('file.ini');
+$obj = new ParseINI($ini);
+try {
+    $obj->parse();
+}
+catch(RuntimeException $e) {
+    var_dump($e);
+}
+$result = $obj->getResult();
+var_dump($result);
 ```

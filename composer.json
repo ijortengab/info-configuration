@@ -12,9 +12,16 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "psr/log": "^1.0"
+        "ijortengab/tools": "master"
     },
+    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {"IjorTengab\\": "src/"}
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/ijortengab/tools"
+        }
+    ]
 }

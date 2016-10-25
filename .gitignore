@@ -1,5 +1,5 @@
 test
-test.ini
+test*
 composer.phar
 composer.lock
 /vendor/
