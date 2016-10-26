@@ -154,7 +154,7 @@ class ParseINI extends AbstractAnalyzeCharacter
                         'value' => $value,
                         'array_type' => $array_type,
                     ];
-                    $this->sequence_of_scalar[] = $key;
+                    $this->sequence_of_scalar[$key] += 1;
                     $data_expand = ArrayDimensional::expand([$_k => $value]);
                     $this->data = array_replace_recursive((array) $this->data, $data_expand);
                     break;
