@@ -142,9 +142,13 @@ class ParseINI extends AbstractAnalyzeCharacter
             }
             switch ($array_type) {
                 case 'indexed':
-                    $count = array_count_values($this->sequence_of_scalar);
-                    $c = isset($count[$key]) ? $count[$key] : 0;
-                    $_k = $m[1] . '[' . $c . ']';
+                    if (array_key_exists($key, $this->sequence_of_scalar)) {
+                        $count = $this->sequence_of_scalar[$key];
+                    }
+                    else {
+                        $count = $this->sequence_of_scalar[$key] = 0;
+                    }
+                    $_k = $m[1] . '[' . $count . ']';
                     $this->keys[$_k] = [
                         'line' => $line,
                         'value' => $value,
