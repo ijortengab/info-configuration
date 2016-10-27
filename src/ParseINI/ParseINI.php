@@ -4,7 +4,7 @@ namespace IjorTengab\ParseINI;
 
 use IjorTengab\Tools\Abstracts\AbstractAnalyzeCharacter;
 use IjorTengab\Tools\Functions\CamelCase;
-use IjorTengab\Tools\Functions\ArrayDimensional;
+use IjorTengab\Tools\Functions\ArrayHelper;
 
 /**
  * Parser for INI file format.
@@ -155,7 +155,7 @@ class ParseINI extends AbstractAnalyzeCharacter
                         'array_type' => $array_type,
                     ];
                     $this->sequence_of_scalar[$key] += 1;
-                    $data_expand = ArrayDimensional::expand([$_k => $value]);
+                    $data_expand = ArrayHelper::dimensionalExpand([$_k => $value]);
                     $this->data = array_replace_recursive((array) $this->data, $data_expand);
                     break;
 
@@ -165,7 +165,7 @@ class ParseINI extends AbstractAnalyzeCharacter
                         'value' => $value,
                         'array_type' => $array_type,
                     ];
-                    $data_expand = ArrayDimensional::expand([$key => $value]);
+                    $data_expand = ArrayHelper::dimensionalExpand([$key => $value]);
                     $this->data = array_replace_recursive((array) $this->data, $data_expand);
                     break;
             }
