@@ -115,6 +115,19 @@ class ParseINI extends AbstractAnalyzeCharacter
      */
     protected function analyzeCurrentLine()
     {
+        if ($this->current_step !== 'init') {
+            return;
+        }
+        if ($this->current_line_string === '') {
+            return;
+        }
+        $current_line_string = $this->current_line_string;
+        // Jika semuanya adalah spasi
+        if (ctype_space($current_line_string)) {
+            $this->setCharacter('key_prepend', $current_line_string);
+            $this->current_character += strlen($current_line_string);
+            return;
+        }
     }
 
     /**
@@ -136,6 +149,11 @@ class ParseINI extends AbstractAnalyzeCharacter
             $line_info = $segmen[$line];
             $key = isset($line_info['key']) ? $line_info['key']: null;
             $value = isset($line_info['value']) ? $line_info['value']: null;
+            if (isset($value)) {
+                if (!isset($line_info['quote_value'])) {
+                    $value = $this->convertStringValue($value);
+                }
+            }
             $array_type = null;
             if (isset($key)) {
                 $array_type = (preg_match('/(.*)\[\]$/', $key, $m)) ? 'indexed' : 'associative';
@@ -252,6 +270,17 @@ class ParseINI extends AbstractAnalyzeCharacter
      */
     protected function analyzeStepInit()
     {
+        // $current_character = $this->current_character;
+        // $debugname = 'current_character'; echo "\r\n<pre>" . __FILE__ . ":" . __LINE__ . "\r\n". 'var_dump(' . $debugname . '): '; var_dump($$debugname); echo "</pre>\r\n";
+
+        // $current_character_string = $this->current_character_string;
+        // $debugname = 'current_character_string'; echo "\r\n<pre>" . __FILE__ . ":" . __LINE__ . "\r\n". 'var_dump(' . $debugname . '): '; var_dump($$debugname); echo "</pre>\r\n";
+
+        // $is_last = $this->is_last;
+        // $debugname = 'is_last'; echo "\r\n<pre>" . __FILE__ . ":" . __LINE__ . "\r\n". 'var_dump(' . $debugname . '): '; var_dump($$debugname); echo "</pre>\r\n";
+
+        // die;
+
         $default = false;
         if ($this->is_alphanumeric) {
             $default = true;
@@ -272,6 +301,9 @@ class ParseINI extends AbstractAnalyzeCharacter
         elseif ($this->is_commentsign) {
             $this->setCurrentCharacterAs('comment');
             $this->next_step = 'build_comment';
+        }
+        elseif ($this->is_last) {
+            $default = false;
         }
         else {
             $default = true;
@@ -456,9 +488,6 @@ class ParseINI extends AbstractAnalyzeCharacter
                 $this->setCurrentCharacterAs('comment');
                 $this->next_step = 'build_comment';
             }
-
-            $this->setCurrentCharacterAs('comment');
-            $this->next_step = 'build_comment';
         }
         else {
             $default = true;
@@ -587,6 +616,39 @@ class ParseINI extends AbstractAnalyzeCharacter
             $this->segmen[$this->current_line][$type . '_append'] = substr($current, strlen($test));
             $this->segmen[$this->current_line][$type] = $test;
         }
+    }
+
+    /**
+     *
+     */
+    protected function convertStringValue($string)
+    {
+        switch ($string) {
+            case 'NULL':
+            case 'null':
+                return null;
+            case 'TRUE':
+            case 'true':
+                return true;
+            case 'FALSE':
+            case 'false':
+                return false;
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                return (int) $string;
+        }
+        if (is_numeric($string)) {
+            return (int) $string;
+        }
+        return $string;
     }
 
     /**
