@@ -261,7 +261,7 @@ class ParseINI extends AbstractAnalyzeCharacter
     /**
      *
      */
-    protected function afterAnalyze()
+    protected function afterAnalyzeCurrentCharacter()
     {
     }
 
