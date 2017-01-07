@@ -147,10 +147,10 @@ class ParseINI extends AbstractAnalyzeCharacter
         do {
             $line = key($segmen);
             $line_info = $segmen[$line];
-            $key = isset($line_info['key']) ? $line_info['key']: null;
-            $value = isset($line_info['value']) ? $line_info['value']: null;
+            $key = isset($line_info['segmen']['key']) ? $line_info['segmen']['key']: null;
+            $value = isset($line_info['segmen']['value']) ? $line_info['segmen']['value']: null;
             if (isset($value)) {
-                if (!isset($line_info['quote_value'])) {
+                if (!isset($line_info['segmen']['quote_value'])) {
                     $value = $this->convertStringValue($value);
                 }
             }
@@ -166,7 +166,15 @@ class ParseINI extends AbstractAnalyzeCharacter
                     else {
                         $count = $this->sequence_of_scalar[$key] = 0;
                     }
-                    $_k = $m[1] . '[' . $count . ']';
+                    // Jika ```$key = '[]';```, maka $m[1] = '';
+                    // Oleh karena itu untuk kasus seperti ini, perlu perlakuan
+                    // khusus.
+                    if ($key == '[]') {
+                        $_k = $count;
+                    }
+                    else {
+                        $_k = $m[1] . '[' . $count . ']';
+                    }
                     $this->keys[$_k] = [
                         'line' => $line,
                         'value' => $value,
@@ -562,10 +570,10 @@ class ParseINI extends AbstractAnalyzeCharacter
      */
     protected function setCharacter($key, $value)
     {
-        if (!isset($this->segmen[$this->current_line_populate_segmen][$key])) {
-            $this->segmen[$this->current_line_populate_segmen][$key] = '';
+        if (!isset($this->segmen[$this->current_line_populate_segmen]['segmen'][$key])) {
+            $this->segmen[$this->current_line_populate_segmen]['segmen'][$key] = '';
         }
-        $this->segmen[$this->current_line_populate_segmen][$key] .= $value;
+        $this->segmen[$this->current_line_populate_segmen]['segmen'][$key] .= $value;
     }
 
     /**
@@ -581,8 +589,8 @@ class ParseINI extends AbstractAnalyzeCharacter
      */
     protected function getCharacter($key)
     {
-        if (isset($this->segmen[$this->current_line][$key])) {
-            return $this->segmen[$this->current_line][$key];
+        if (isset($this->segmen[$this->current_line]['segmen'][$key])) {
+            return $this->segmen[$this->current_line]['segmen'][$key];
         }
     }
 
@@ -613,8 +621,8 @@ class ParseINI extends AbstractAnalyzeCharacter
         $current = $this->getCharacter($type);
         $test = rtrim($current);
         if ($current !== $test) {
-            $this->segmen[$this->current_line][$type . '_append'] = substr($current, strlen($test));
-            $this->segmen[$this->current_line][$type] = $test;
+            $this->segmen[$this->current_line]['segmen'][$type . '_append'] = substr($current, strlen($test));
+            $this->segmen[$this->current_line]['segmen'][$type] = $test;
         }
     }
 
